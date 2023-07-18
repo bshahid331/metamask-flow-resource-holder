@@ -1,0 +1,72 @@
+{
+	"contracts": {
+		"FungibleToken": {
+			"source": "cadence/contracts/FungibleToken.cdc",
+			"aliases": {
+				"emulator": "ee82856bf20e2aa6",
+				"mainnet": "f233dcee88fe0abe",
+				"testnet": "9a0766d93b6608b7"
+			}
+		},
+		"MetadataViews": {
+			"source": "cadence/contracts/MetadataViews.cdc",
+			"aliases": {
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"ViewResolver": {
+			"source": "cadence/contracts/ViewResolver.cdc",
+			"aliases": {
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"NonFungibleToken": {
+			"source": "cadence/contracts/NonFungibleToken.cdc",
+			"aliases": {
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"ExampleNFT": "cadence/contracts/ExampleNFT.cdc",
+		"ResourceHolder" : "cadence/contracts/ResourceHolder.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"default": {
+			"address": "f3fcd2c1a78f5eee",
+			"key": "f66227e93c3ddf22451eb8bab13bcc74202bdbcb188bc6a6c25df8000e99ccce"
+		},
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "aca7bcca2c7925e5aae15cc5d05eafe6f9cee203568b1dbec8bb3352b0445743"
+		},
+		"testnet-account": {
+			"address": "69485d9b2eb9937a",
+			"key": {
+				"type": "file",
+				"location": "testnet-account.pkey"
+			}
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"default": [
+				"MetadataViews",
+				"NonFungibleToken"
+			]
+		},
+		"testnet": {
+			"testnet-account": [
+				"ExampleNFT",
+				"ResourceHolder"
+			]
+		}
+	}
+}
