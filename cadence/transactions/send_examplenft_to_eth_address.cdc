@@ -1,3 +1,4 @@
+import MetadataViews from "../contracts/MetadataViews.cdc"
 import ExampleNFT from "../contracts/ExampleNFT.cdc"
 import ResourceHolder from "../contracts/ResourceHolder.cdc"
 
@@ -13,8 +14,9 @@ transaction(nftId: UInt64, ethAddress: String) {
 
     execute {
          let nft <- self.withdrawRef.withdraw(withdrawID: nftId)
+         let displayView = nft.resolveView(Type<MetadataViews.Display>()) as! MetadataViews.Display?
 
-         ResourceHolder.deposit(claimerETHAddress: ethAddress, resource: <-nft)
+         ResourceHolder.deposit(claimerETHAddress: ethAddress, resource: <-nft, display: displayView)
     }
 
 }

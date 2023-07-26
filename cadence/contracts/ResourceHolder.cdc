@@ -1,5 +1,6 @@
 import FungibleToken from "./FungibleToken.cdc"
 import NonFungibleToken from "./NonFungibleToken.cdc"
+import MetadataViews from "./MetadataViews.cdc"
 
 // WIP
 
@@ -34,7 +35,8 @@ pub contract ResourceHolder {
 
         pub fun deposit(
             claimerETHAddress: String,
-            resource: @AnyResource
+            resource: @AnyResource,
+            display: MetadataViews.Display?
         ) {
             if !self.bags.containsKey(claimerETHAddress) {
                 let bag <- create Bag(claimerETHAddress: claimerETHAddress)
@@ -42,7 +44,7 @@ pub contract ResourceHolder {
                 destroy oldValue
             }
             let bagRef = (&self.bags[claimerETHAddress] as &ResourceHolder.Bag?)!
-            let item <- create Item(resource: <-resource, claimer: claimerETHAddress)
+            let item <- create Item(resource: <-resource, claimer: claimerETHAddress, display: display)
             bagRef.deposit(item: <-item)
         }
 
@@ -91,14 +93,20 @@ pub contract ResourceHolder {
     pub resource Item {
         access(contract) var resource: @AnyResource?
         pub let claimer: String
+        pub let display: MetadataViews.Display?
 
         init(
             resource: @AnyResource,
-            claimer: String
-
+            claimer: String,
+            display: MetadataViews.Display?
         ) {
             self.resource <- resource
             self.claimer = claimer
+            self.display = display
+        }
+
+        pub fun getDisplay() : MetadataViews.Display? {
+            return self.display
         }
 
         pub fun withdraw(receiver: Capability, publicKey: String, signature: String, data: SignedData) {
@@ -182,10 +190,11 @@ pub contract ResourceHolder {
 
     pub fun deposit(
         claimerETHAddress: String,
-        resource: @AnyResource
+        resource: @AnyResource,
+        display: MetadataViews.Display?
     ) {
         let bagManagerRef = ResourceHolder.borrowBagManager()
-        bagManagerRef.deposit(claimerETHAddress: claimerETHAddress, resource: <-resource)
+        bagManagerRef.deposit(claimerETHAddress: claimerETHAddress, resource: <-resource, display: display)
     }
 
     pub fun getItemIDsForETHAddress(claimerETHAddress : String) : [UInt64] {
@@ -197,6 +206,13 @@ pub contract ResourceHolder {
         }
 
         return bagRef!.getItemIDs()
+    }
+
+    pub fun getItemNFTDisplay(claimerETHAddress : String, itemId : UInt64) : MetadataViews.Display? {
+        let bagManagerRef = ResourceHolder.borrowBagManager()
+        let bagRef = bagManagerRef.borrowBag(claimerETHAddress: claimerETHAddress)
+
+        return bagRef!.borrowItem(id: itemId)!.getDisplay()
     }
 
     access(contract) fun borrowBagManager(): &BagManager {

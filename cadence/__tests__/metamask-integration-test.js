@@ -74,6 +74,10 @@ describe("MetaMask Integration Test Suite", () => {
     expect(result.length).toBe(1)
     expect(error).toBe(null);
 
+    [result, error] = await executeScript({ name: "get_examplenft_data_for_eth_address", args: [TEST_ETH_ADDRESS, result[0]] });
+    expect(result.name).not.toBe(null)
+    expect(error).toBe(null);
+
     const ethWalletsFlowAccount = await getAccountAddress("ETHUser");
 
     [result, error] = await sendTransaction({ name: "claim_nft_from_eth_address", args: ["invalidPublicKey", "invalidSig", TEST_ETH_ADDRESS, result[0], "99999999999999"], signers: [ethWalletsFlowAccount] });
