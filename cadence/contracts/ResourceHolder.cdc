@@ -1,8 +1,7 @@
 import FungibleToken from "./FungibleToken.cdc"
 import NonFungibleToken from "./NonFungibleToken.cdc"
 import MetadataViews from "./MetadataViews.cdc"
-
-// WIP
+import ETHUtils from "./ETHUtils.cdc"
 
 pub contract ResourceHolder {
     pub let BagManagerPublicPath: PublicPath
@@ -132,34 +131,18 @@ pub contract ResourceHolder {
                 target.deposit(from: <- token!)
                 return
             } else {
-                panic("cannot claim resource to receiver")
+                panic("Unsupported type")
             }
         }
 
         access(self) fun verifyWithdrawSignature(publicKey: String, signature: String, data: SignedData): Bool {
-            let publicKeyBytes = publicKey.decodeHex()
-            let signatureBytes = signature.decodeHex()
             
             let message = data.toString()
-            let ethereumMessagePrefix: String = "\u{0019}Ethereum Signed Message:\n".concat(message.length.toString())
-            let fullMessage: String = ethereumMessagePrefix.concat(message)
 
-            let publicKey = PublicKey(
-                publicKey: publicKeyBytes,
-                signatureAlgorithm: SignatureAlgorithm.ECDSA_secp256k1
-            )
-
-            let isValid = publicKey.verify(
-                signature: signatureBytes,
-                signedData: fullMessage.utf8,
-                domainSeparationTag: "",
-                hashAlgorithm: HashAlgorithm.KECCAK_256
-            )
+            let isValid = ETHUtils.verifySignature(hexPublicKey: publicKey, hexSignature: signature, message: message)
 
             // Get ETH Public address from key
-            let digest = HashAlgorithm.KECCAK_256.hash(publicKeyBytes)
-            let hexDigest = String.encodeHex(digest)
-            let ethAddress = "0x".concat(hexDigest.slice(from: hexDigest.length-40, upTo: hexDigest.length))
+            let ethAddress = ETHUtils.getETHAddressFromPublicKey(hexPublicKey: publicKey)
             
             if ethAddress != self.claimer {
                 return false

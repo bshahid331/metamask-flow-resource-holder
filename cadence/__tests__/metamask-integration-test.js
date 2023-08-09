@@ -55,7 +55,10 @@ describe("MetaMask Integration Test Suite", () => {
     await deployContractByName({ to: admin, name: "ViewResolver" });
     await deployContractByName({ to: admin, name: "ExampleNFT" });
     
-    let [result, error] = await deployContractByName({ to: admin, name: "ResourceHolder" });
+    let [result, error] = await deployContractByName({ to: admin, name: "ETHUtils" });
+    expect(error).toBe(null);
+    
+    [result, error] = await deployContractByName({ to: admin, name: "ResourceHolder" });
     expect(error).toBe(null);
 
     const nftHolderOne = await getAccountAddress("NFTHolderOne");
